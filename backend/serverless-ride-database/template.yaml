@@ -1,0 +1,112 @@
+service: ride-database
+plugins:
+  - serverless-python-requirements
+
+pythonRequirements:
+  dockerizePip: true
+
+provider:
+  name: aws
+  runtime: python3.7
+  region: eu-central-1
+  role: resBackendRole
+
+  environment:
+    stage: ${paramEnvId}
+    rideTable: ${rideTable}
+    rideIndex: ${rideIndex}
+
+    VAULT_BUCKET:
+      StackRef:
+        region: {Ref: 'AWS::Region'}
+        stackName: vault
+        paramName: vaultBucketName
+    VAULT_KEY:
+      StackRef:
+        region: {Ref: 'AWS::Region'}
+        stackName: vault
+        paramName: kmsKeyArn
+
+custom:
+  dbCapacity:
+    dev: 1
+    prod: 5
+
+functions:
+  getRides:
+    description: Get rides with a ride-id or query database.
+    handler: get_rides.handler
+    events:
+      - http:
+          path: get_rides
+          method: get
+          cors: true
+  postRide:
+    description: Lambda and endpoint for rides which customers post, includes post-endpoint.
+    handler: post_new_ride.handler
+    events:
+      - http:
+          path: post_new_ride
+          method: post
+          cors: true
+  postPassengers:
+    description: Lambda and endpoint to add accepted customers to ride.
+    handler: post_accepted_passengers.handler
+    events:
+      - http:
+          path: post_accepted_passengers
+          method: post
+          cors: true
+  postRideUpdate:
+    description: Update existing ride in the dabase.
+    handler: update_existing_ride.handler
+    events:
+      - http:
+          path: post_ride_update
+          method: post
+          cors: true
+
+resources:
+  Resources:
+    resBackendRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: "Allow"
+              Principal:
+                Service:
+                  - "lambda.amazonaws.com"
+              Action:
+                - "sts:AssumeRole"
+        ManagedPolicyArns:
+          - StackRef: {region: {Ref: 'AWS::Region'}, stackName: vault, paramName: decryptPolicy}
+          - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        Policies:
+          - PolicyName: allowDynamo
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: "Allow"
+                  Action:
+                    - "dynamodb:GetItem"
+                    - "dynamodb:PutItem"
+                    - "dynamodb:Query"
+                    - "dynamodb:Scan"
+                  Resource:
+                    - arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/${rideTable}
+                    - arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/${rideTable}/index/*
+    rideMasterDb:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${rideTable}
+        AttributeDefinitions:
+          - AttributeName: ${rideIndex}
+            AttributeType: S
+        KeySchema:
+          - AttributeName: ${rideIndex}
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: ${self:custom.dbCapacity.${opt:stage, self:provider.stage}}
+          WriteCapacityUnits: ${self:custom.dbCapacity.${opt:stage, self:provider.stage}}

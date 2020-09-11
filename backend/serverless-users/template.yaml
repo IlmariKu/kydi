@@ -1,0 +1,230 @@
+service: kydi-users-auth
+
+provider:
+  name: aws
+  runtime: python3.8
+  region: eu-central-1
+  role: resBackendRole
+
+  environment:
+    DOMAIN_SUFFIX: kydi-auth
+    stage: ${paramEnvId}
+    userTable: ${userTable}
+    indexName: ${indexName}
+    cognitoPool: ${cognitoPool}
+    pictureBucketName: ${pictureBucketName}
+    REGION: eu-central-1
+
+  httpApi:
+    authorizers:
+      serviceAuthorizer:
+        identitySource: $request.header.Authorization
+        issuerUrl:
+          Fn::Join:
+          - ''
+          - - 'https://cognito-idp.'
+            - '${opt:region, self:provider.region}'
+            - '.amazonaws.com/'
+            - Ref: serviceUserPool
+        audience:
+          - Ref: serviceUserPoolClient
+
+functions:
+  updateUserProfile:
+    description: Update existing user profile with new data.
+    handler: post_user_profile.handler
+    events:
+      - http:
+          path: post-userData
+          method: post
+          cors: true
+  getUserProfile:
+    description: Get existing user profile from db with all aitems.
+    handler: get_user_profile.handler
+    events:
+      - http:
+          path: get-user-profile
+          method: get
+          cors: true
+
+
+resources:
+  Resources:
+    resBackendRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: "Allow"
+              Principal:
+                Service:
+                  - "lambda.amazonaws.com"
+              Action:
+                - "sts:AssumeRole"
+        ManagedPolicyArns:
+          - StackRef: {region: {Ref: 'AWS::Region'}, stackName: vault, paramName: decryptPolicy}
+          - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+          - "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+        Policies:
+          - PolicyName: allowDynamo
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: "Allow"
+                  Action:
+                    - "dynamodb:AmazonDynamoDBFullAccess"
+                  Resource:
+                    - arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/${userTable}
+                    - arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/${userTable}/index/*
+
+    S3ImageBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: dev-kydi-user-profile-pics
+        AccessControl: PublicReadWrite
+        CorsConfiguration:
+          CorsRules:
+            -
+              AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+              MaxAge: 3000
+              ExposedHeaders:
+                - x-amz-server-side-encryption
+                - x-amz-request-id
+                - x-amz-id-2
+                - ETag
+
+    serviceUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: ${cognitoPool}
+        UsernameAttributes:
+          - email
+        AutoVerifiedAttributes:
+          - email
+
+    CognitoIdentityPool:
+      Type: AWS::Cognito::IdentityPool
+      Properties:
+        IdentityPoolName: ${self:service}-${self:provider.stage}-${self:provider.region}-IdentityPool
+        AllowUnauthenticatedIdentities: false
+        CognitoIdentityProviders:
+          - ClientId: 4op2il2nkeommbbe18a04cq74u
+            ProviderName: cognito-idp.eu-central-1.amazonaws.com/eu-central-1_Vm4L0dFU0
+
+    CognitoIdentityPoolRoles:
+      Type: AWS::Cognito::IdentityPoolRoleAttachment
+      Properties:
+        IdentityPoolId:
+          Ref: CognitoIdentityPool
+        Roles:
+          authenticated:
+            !GetAtt CognitoAuthRole.Arn
+
+    CognitoAuthRole:
+      Type: AWS::IAM::Role
+      Properties:
+        Path: /
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: 'Allow'
+              Principal:
+                Federated: 'cognito-identity.amazonaws.com'
+              Action:
+                - 'sts:AssumeRoleWithWebIdentity'
+              Condition:
+                StringEquals:
+                  'cognito-identity.amazonaws.com:aud':
+                    Ref: CognitoIdentityPool
+                'ForAnyValue:StringLike':
+                  'cognito-identity.amazonaws.com:amr': authenticated
+        Policies:
+          - PolicyName: ${self:service}-${self:provider.stage}-${self:provider.region}-S3CognitoAuthPolicy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: 'Allow'
+                  Action:
+                    - 's3:GetObject'
+                    - 's3:PutObject'
+                  Resource:
+                    - !Join [ '', [ !GetAtt S3ImageBucket.Arn, '/*' ]]
+
+    serviceUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        ClientName: kydiusers-test-client-${opt:stage, self:provider.stage}
+        AllowedOAuthFlows:
+          - implicit
+        AllowedOAuthFlowsUserPoolClient: true
+        AllowedOAuthScopes:
+          - phone
+          - email
+          - openid
+          - profile
+          - aws.cognito.signin.user.admin
+        UserPoolId:
+          Ref: serviceUserPool
+        CallbackURLs:
+          - https://localhost:3000
+        ExplicitAuthFlows:
+          - ALLOW_USER_SRP_AUTH
+          - ALLOW_REFRESH_TOKEN_AUTH
+        GenerateSecret: false
+        SupportedIdentityProviders:
+          - COGNITO
+    serviceUserPoolDomain:
+      Type: AWS::Cognito::UserPoolDomain
+      Properties:
+        UserPoolId:
+          Ref: serviceUserPool
+        Domain: kydiusers-test-domain-${opt:stage, self:provider.stage}-${self:provider.environment.DOMAIN_SUFFIX}
+    userDb:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${userTable}
+        AttributeDefinitions:
+          - AttributeName: ${indexName}
+            AttributeType: S
+        KeySchema:
+          - AttributeName: ${indexName}
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 3
+          WriteCapacityUnits: 3
+    uploadUserPicture:
+      Type: AWS::IAM::User
+      Properties:
+        Policies:
+          - PolicyName: allowS3
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: "Allow"
+                  Action:
+                    - "s3:GetObject"
+                    - "s3:GetObjectTagging"
+                    - "s3:PutObjectTagging"
+                    - "s3:PutObject"
+                  Resource:
+                    - arn:aws:s3:::${pictureBucketName}/*
+          - PolicyName: allowS3
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: "Allow"
+                  Action:
+                    - "s3:GetObject"
+                    - "s3:GetObjectTagging"
+                    - "s3:PutObjectTagging"
+                    - "s3:PutObject"
+                  Resource:
+                    - arn:aws:s3:::${pictureBucketName}/*

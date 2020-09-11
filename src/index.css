@@ -1,0 +1,419 @@
+/** GLOBAL COLORS
+Main color: #33aec9
+Main light: #71e0fc
+Main dark: #007e98
+
+Secondary: #39dadf
+Secondary light: #7bffff
+Secondary dark: #00a8ad
+**/
+
+/* General styling */
+
+body,
+html,
+.container-fluid {
+  min-height: 100vh;
+  margin: 0em;
+  padding: 0;
+  font-family: 'Montserrat', sans-serif;
+  color: #494c4d;
+  background: rgb(51, 174, 201);
+  background: linear-gradient(
+    90deg,
+    rgba(51, 174, 201, 0.6965161064425771) 0%,
+    rgba(57, 204, 223, 0.7553396358543417) 55%,
+    rgba(48, 188, 193, 0.8561799719887955) 100%
+  );
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* GLOBAL CONTENT WRAPPER */
+
+@media (min-width: 326px) {
+  .wrapper {
+    padding: 1.5rem 0rem 1.2rem 0.5rem;
+  }
+}
+
+@media (min-width: 576px) {
+  .wrapper {
+    padding: 1.5rem 2rem 1rem 2rem;
+  }
+}
+
+@media (min-width: 992px) {
+  .wrapper {
+    padding: 3rem 2rem 1.5rem 2rem;
+  }
+}
+
+.h3 {
+  font-size: 1.8em;
+  color: #18bcb1;
+}
+
+.mainPageTitle {
+  color: #fff; 
+  border-bottom: 1px solid white; 
+}
+
+.row {
+  margin-right: 0px;
+}
+
+.form {
+  padding: 30em;
+}
+
+input[type="checkbox"] {
+  transform: scale(4);
+  margin-left: 1vw;
+  margin-top: 1vh;
+}
+
+img {
+  display: block;
+}
+
+.p {
+  size: 2em;
+}
+
+a {
+  color: #094e4e;
+}
+
+a:hover{
+  text-decoration: none;
+  color: #71e0fc;
+}
+
+.fa-arrow-left {
+  color: #39dadf;
+  font-size: 1.6em;
+}
+
+.fa-arrow-left:hover {
+  cursor: pointer;
+}
+
+/* FILE UPLOAD BUTTON CSS */
+
+input[type="file"] {
+  display: none;
+}
+
+.custom-file-upload {
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+
+
+/* NAVIGATION MENU RESPONSIVE STYLING */
+
+
+@media (min-width: 576px) {
+
+  .navbar-nav .nav-link {
+    font-size: 3.5vh;
+    color: #fff;
+  }
+}
+
+@media (min-width: 992px) {
+
+  .navbar-nav .nav-link {
+    font-size: 1em;
+    color: #fff;
+  }
+
+  .navbar-light .navbar-nav .nav-link:hover {
+    border-bottom: 4px solid#007e98;
+  }
+}
+
+/* FORM STYLING */
+
+.form-label {
+  font-size: 3.8vh;
+}
+
+.form-control {
+  height: 10vh;
+  font-size: 3vh;
+  border-radius: 0.6rem;
+  border: 1px solid #007E98
+}
+.form-control:focus {
+  background-color: #fafafa;
+  color: #333535;
+}
+
+/* Responsive FORM STYLING */
+@media (min-width: 576px) {
+  .form-label {
+    font-size: 3.5vh;
+  }
+}
+
+@media (min-width: 992px) {
+  .form-label {
+    font-size: 3vh;
+  }
+  .form-control {
+    height: 7.5vh;
+  }
+}
+
+/* CARD COMPONENT STYLING */
+
+/* light grey background */
+.component-background {
+  background-color: #faffff;
+  padding: 30px;
+  border-radius: 1.5em;
+  -webkit-box-shadow: -2px 2px 25px 8px rgba(87, 87, 87, 0.2);
+  -moz-box-shadow: -2px 2px 25px 8px rgba(87, 87, 87, 0.2);
+  box-shadow: -2px 2px 25px 8px rgba(87, 87, 87, 0.2);
+}
+
+.component-background-ride-view {
+  background-color: #fdfeff;
+  padding: 20px;
+  border-radius: 1rem;
+  -webkit-box-shadow: -2px 2px 25px 8px rgba(87, 87, 87, 0.2);
+  -moz-box-shadow: -2px 2px 25px 8px rgba(87, 87, 87, 0.2);
+  box-shadow: -2px 2px 25px 8px rgba(87, 87, 87, 0.2);
+}
+
+.component-background-single-ride-view {
+  background-color: #fdfeff;
+  border-radius: 1rem;
+  -webkit-box-shadow: 3px -1px 6px -1px rgba(49,73,94,0.26);
+  -moz-box-shadow: 3px -1px 6px -1px rgba(49,73,94,0.26);
+  box-shadow: 3px -1px 6px -1px rgba(49,73,94,0.26);
+}
+
+.component-background-main-news {
+  background-color: #fdfeff;
+  padding: 20px;
+  margin-top: 2rem;
+  border-radius: 1rem;
+  -webkit-box-shadow: -2px 2px 25px 8px rgba(87, 87, 87, 0.2);
+  -moz-box-shadow: -2px 2px 25px 8px rgba(87, 87, 87, 0.2);
+  box-shadow: -2px 2px 25px 8px rgba(87, 87, 87, 0.2);
+}
+
+
+.component-background-mainpage-view {
+  background-color: #fdfeff;
+  background-image: linear-gradient(90deg, rgba(0,126,152,0.7) 0%, rgba(58,200,230,0.7) 100%), url("../static/MainContentPic.jpg");
+  background-size: cover;
+  color: #fff;
+  padding: 20px;
+  margin-top: 2rem;
+  border-radius: 1rem;
+  -webkit-box-shadow: -2px 2px 25px 8px rgba(87, 87, 87, 0.2);
+  -moz-box-shadow: -2px 2px 25px 8px rgba(87, 87, 87, 0.2);
+  box-shadow: -2px 2px 25px 8px rgba(87, 87, 87, 0.2);
+}
+
+.component-background-ride-bg-view {
+  background-color: #fdfeff;
+  background-image: linear-gradient(90deg, rgba(0,126,152,0.7) 0%, rgba(58,200,230,0.7) 100%), url("../static/ridepic.jpg");
+  background-size: cover;
+  color: #fff;
+  padding: 1rem 1rem 2rem 1rem;
+  clip-path: polygon(0 0, 100% 0, 100% 85%, 50% 100%, 0% 85%);
+
+}
+
+/* white background */
+.component-background-mainform {
+  background-color: rgb(255, 255, 255);
+  padding: 30px;
+  border-radius: 1.5em 1.5em 0 0;
+  -webkit-box-shadow: -2px 2px 25px 8px rgba(87, 87, 87, 0.2);
+  -moz-box-shadow: -2px 2px 25px 8px rgba(87, 87, 87, 0.2);
+  box-shadow: -2px 2px 25px 8px rgba(87, 87, 87, 0.2);
+}
+
+
+.leaveRequest {
+  position: sticky;
+}
+/* BUTTON STYLING */
+
+/* main search button */
+.btn-searchform-start {
+  background: radial-gradient(
+    circle,
+    rgba(0, 129, 152, 0.8169642857142857) 0%,
+    rgba(0, 129, 152, 1) 100%
+  );
+  padding: 1em;
+  border: none;
+  border-radius: 0 0 1em 1em;
+  font-size: 3vh;
+  width: 100%;
+}
+
+/* secondary button */
+
+.btn-searchform {
+  background: radial-gradient(
+    circle,
+    rgba(0, 129, 152, 0.8169642857142857) 0%,
+    rgba(0, 129, 152, 1) 100%
+  );
+  padding: 1em;
+  border: none;
+  border-radius: 10px 10px 10px 10px;
+  font-size: 3vh;
+  width: 100%;
+}
+
+/* Login and register buttons */
+
+.btn-login {
+  background: radial-gradient(
+    circle,
+    rgba(0, 129, 152, 0.8169642857142857) 0%,
+    rgba(0, 129, 152, 1) 100%
+  );
+  padding: 1em;
+  border: none;
+  border-radius: 1.5rem;
+}
+
+.btn-login:hover {
+  background-color: #009ca1;
+  transform: scale(1.01);
+  border: none;
+}
+
+.btn-login:click {
+  background-color: #009995;
+}
+
+/* Responsive login / reg design */
+
+@media (min-width: 576px) {
+  .btn-login {
+    font-size: 3vh;
+  }
+}
+
+@media (min-width: 992px) {
+  .btn-login {
+    font-size: 3vh;
+  }
+}
+
+/* button effects */
+.btn-searchform-start:hover {
+  background-color: #009ca1;
+  transform: scale(1.01);
+  border: none;
+}
+
+.btn-sendmessage {
+  background: radial-gradient(
+    circle,
+    rgba(0, 129, 152, 0.8169642857142857) 0%,
+    rgba(0, 129, 152, 1) 100%
+  );
+  border-radius: 10px 10px 10px 10px;
+  font-size: 3.5vh;
+  width: 100%;
+  border: none;
+}
+
+.btn-sendmessage:hover {
+  background-color: #009ca1;
+  transform: scale(1.01);
+  border: none;
+}
+
+.btn-profile {
+  background-color: #333535;
+  border-radius: 0.5rem;
+  font-size: 2vh;
+  border: none;
+}
+
+.btn-profile:hover {
+  background-color: #009ca1;
+  transform: scale(1.01);
+  border: none;
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+  background-color: #007e98;
+  color: white;
+}
+
+/* REACT-DATEPICKER WORKAROUND
+  https://github.com/Hacker0x01/react-datepicker/issues/624#issuecomment-261696513
+  */
+.react-datepicker {
+  font-size: 1em;
+}
+.react-datepicker__header {
+  padding-top: 0.8em;
+}
+.react-datepicker__month {
+  margin: 0.4em 1em;
+}
+.react-datepicker__day-name,
+.react-datepicker__day {
+  width: 1.9em;
+  line-height: 1.9em;
+  margin: 0.166em;
+}
+.react-datepicker__current-month {
+  font-size: 1em;
+}
+.react-datepicker__navigation {
+  top: 1em;
+  line-height: 1.7em;
+  border: 0.45em solid transparent;
+}
+.react-datepicker__navigation--previous {
+  border-right-color: #ccc;
+  left: 1em;
+}
+.react-datepicker__navigation--next {
+  border-left-color: #ccc;
+  right: 1em;
+}
+/* END react-datepicker workaround */
+
+
+
+
+
+/** Alert message **/ 
+
+.alertBox {
+  background-color: #007e98; 
+  box-shadow: -2px 2px 25px 8px rgba(87, 87, 87, 0.2);
+  color: #fff; 
+  border-radius: 1rem; 
+  padding: 0.5rem; 
+  margin-bottom: 1.5rem; 
+}
+
+.fa-info-circle {
+  margin-right: 1rem; 
+}
+.alertMessage {
+   color: #fff; 
+   font-size: 1rem; 
+}

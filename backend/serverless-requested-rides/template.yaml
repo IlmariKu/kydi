@@ -1,0 +1,94 @@
+service: kydi-requested-rides
+
+plugins:
+  - serverless-python-requirements
+
+pythonRequirements:
+  dockerizePip: true
+
+provider:
+  name: aws
+  runtime: python3.8
+  region: eu-central-1
+  role: resBackendRole
+
+  environment:
+    stage: ${paramEnvId}
+    tableName: ${requestedRidesTable}
+    indexName: ${indexName}
+
+    VAULT_BUCKET:
+      StackRef:
+        region: {Ref: 'AWS::Region'}
+        stackName: vault
+        paramName: vaultBucketName
+    VAULT_KEY:
+      StackRef:
+        region: {Ref: 'AWS::Region'}
+        stackName: vault
+        paramName: kmsKeyArn
+
+custom:
+  dbCapacity:
+    dev: 1
+    prod: 1
+
+functions:
+  postRequestedRides:
+    description: API endpoint and lambda to write new requested rides to db.
+    handler: post_requested_rides.handler
+    events:
+      - http:
+         path: post-new-request
+         method: post
+         cors: true
+  getRequestedRides:
+    description: API endpoint and lambda to query requested rides.
+    handler: get_requested_rides.handler
+    events:
+      - http:
+         path: get-requested-rides
+         method: get
+         cors: true
+
+resources:
+  Resources:
+    resBackendRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: "Allow"
+              Principal:
+                Service:
+                  - "lambda.amazonaws.com"
+              Action:
+                - "sts:AssumeRole"
+        ManagedPolicyArns:
+          - StackRef: {region: {Ref: 'AWS::Region'}, stackName: vault, paramName: decryptPolicy}
+          - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        Policies:
+          - PolicyName: allowDynamo
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: "Allow"
+                  Action:
+                    - "dynamodb:PutItem"
+                  Resource:
+                    - arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/${requestedRidesTable}
+                    - arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/${requestedRidesTable}/index/*
+    chatDB:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${requestedRidesTable}
+        AttributeDefinitions:
+          - AttributeName: ${indexName}
+            AttributeType: S
+        KeySchema:
+          - AttributeName: ${indexName}
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: ${self:custom.dbCapacity.${opt:stage, self:provider.stage}}
+          WriteCapacityUnits: ${self:custom.dbCapacity.${opt:stage, self:provider.stage}}

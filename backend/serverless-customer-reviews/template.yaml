@@ -1,0 +1,90 @@
+service: kydi-customer-reviews-api
+
+plugins:
+  - serverless-python-requirements
+
+pythonRequirements:
+  dockerizePip: true
+
+provider:
+  name: aws
+  runtime: python3.8
+  region: eu-central-1
+  role: resBackendRole
+
+  environment:
+    stage: ${paramEnvId}
+    reviewTable: ${reviewTable}
+    indexName: ${indexName}
+
+    VAULT_BUCKET:
+      StackRef:
+        region: {Ref: 'AWS::Region'}
+        stackName: vault
+        paramName: vaultBucketName
+    VAULT_KEY:
+      StackRef:
+        region: {Ref: 'AWS::Region'}
+        stackName: vault
+        paramName: kmsKeyArn
+
+functions:
+  postReviews:
+    description: Post new customer reviews to database.
+    handler: post_reviews.handler
+    events:
+      - http:
+         path: post-reviews
+         method: POST
+  getReviews:
+    description: Get already posted customer reviws from database.
+    handler: get_reviews.handler
+    events:
+      - http:
+         path: get-reviews
+         method: GET
+
+resources:
+  Resources:
+    resBackendRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: "Allow"
+              Principal:
+                Service:
+                  - "lambda.amazonaws.com"
+              Action:
+                - "sts:AssumeRole"
+        ManagedPolicyArns:
+          - StackRef: {region: {Ref: 'AWS::Region'}, stackName: vault, paramName: decryptPolicy}
+          - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        Policies:
+          - PolicyName: allowDynamo
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: "Allow"
+                  Action:
+                    - "dynamodb:GetItem"
+                    - "dynamodb:PutItem"
+                    - "dynamodb:Query"
+                    - "dynamodb:Scan"
+                  Resource:
+                    - arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/${reviewTable}
+                    - arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/${reviewTable}/index/*
+    reviewDbTest:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${reviewTable}
+        AttributeDefinitions:
+          - AttributeName: ${indexName}
+            AttributeType: S
+        KeySchema:
+          - AttributeName: ${indexName}
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 2
+          WriteCapacityUnits: 1

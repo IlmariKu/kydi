@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="icon" type="image/png" href="/static/favicon.ico" />
+    <link rel="apple-touch-icon" href="/static/favicon-192.png" />
+    <title>Kydi - Löydä seuraava jaettu matkasi!</title>
+    <meta name="theme-color" />
+    <!-- Facebook metadata-->
+
+    <meta property="og:description" content="Tsekkaa kyyti tästä linkistä!" />
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=xxxxx"
+    ></script>
+
+    <!-- Google Analytics -->
+    <script>
+      (function (i, s, o, g, r, a, m) {
+        i["GoogleAnalyticsObject"] = r;
+        (i[r] =
+          i[r] ||
+          function () {
+            (i[r].q = i[r].q || []).push(arguments);
+          }),
+          (i[r].l = 1 * new Date());
+        (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m);
+      })(
+        window,
+        document,
+        "script",
+        "https://www.google-analytics.com/analytics.js",
+        "ga"
+      );
+      ga("create", "xxxxx", "auto");
+      ga("send", "pageview");
+    </script>
+    <!-- End Google Analytics -->
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta
+      name="”description”"
+      content="”Löydä"
+      seuraava
+      jaettu
+      matkasi!
+      Kimppakyyti
+      määränpäähäsi.”
+    />
+    <script src="https://unpkg.com/regenerator-runtime@0.13.1/runtime.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Krona+One&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+      crossorigin="anonymous"
+    />
+
+    <!-- Animation library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <!-- Add-To-HomeScreen-button -->
+    <link rel="manifest" href="kydi.webmanifest" />
+
+    <script
+      src="https://kit.fontawesome.com/0117d09986.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- Loading-spinner -->
+    <style>
+      #loader {
+        border: 12px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 12px solid #444444;
+        width: 70px;
+        height: 70px;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .center {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+      }
+    </style>
+    <!-- END loading-spinner -->
+  </head>
+  <body>
+    <div id="loader" class="center"></div>
+    <div id="root"></div>
+    <script src="./src/index.js"></script>
+    <script>
+      AOS.init();
+    </script>
+    <noscript>
+      <h2>
+        JavaScript has been disabled on your browser / Javascript ei toimi
+        selaimessasi
+      </h2>
+      <h2>If this is unintended, please contact info@kydi.fi</h2>
+      <h2>
+        Jos et tiedä mistä on kyse, voitko ystävällisesti ottaa yhteyttä
+        info@kydi.fi
+      </h2>
+      <a href="https://www.mozilla.com/"></a>
+    </noscript>
+
+    <script>
+      document.onreadystatechange = function () {
+        if (document.readyState !== "complete") {
+          document.querySelector("#root").style.visibility = "visible";
+          document.querySelector("#loader").style.display = "none";
+        }
+      };
+    </script>
+  </body>
+
+  <!-- Service Worker, A2HS-button -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("service-worker.js")
+        .then(function (reg) {
+          console.log("Service worker registered");
+        })
+        .catch(function (err) {
+          console.log("Service worker, failure: ", err);
+        });
+    }
+  </script>
+  <!-- End Service Worker -->
+</html>

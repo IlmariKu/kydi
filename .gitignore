@@ -1,0 +1,10 @@
+node_modules
+dist
+.cache
+.parcel-cache
+.serverless
+variables.yml
+serverless.yml
+*.DS_Store
+*__pycache__
+.yml
