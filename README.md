@@ -4,7 +4,7 @@
 - Achieved around 4k page-views and 200 users with DIY-FB marketing, but very minimal user-activity. The end result was that people seemed to be satisfied to their current way of organizing and they didn't really need the product.
 - User interviews and research was properly conducted, but the pain point of FB-ridesharing wasn't big enough for users to transition into users. Project was terminated due to these reasons, I could have potentially pivoted to other ideas for the platform, but we just felt with the team, that we don't want to continue on with the project.
 - Frontend: React, PWA-app, hosted from an S3 / Cloudfront-combo. AWS Cognito authentication
-- Backend: Python, Infrastructure-As-Code, using DynamoDB, fully serverless Lambda-functions
+- Backend: Python, Infrastructure-As-Code, DynamoDB, Lambda, API Gateway
 - All AWS, deployed & built with Serverless-framework
 
 ### available at: (11.9.2020)
