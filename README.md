@@ -12,8 +12,8 @@ https://kydi.fi
 
 ### Team
 - Ilmari (repository owner) # Full-stack, 80% of frontend, around 40% of current backend, CI/CD, setting up repo. I was full-time working on the project for the MVP-sprint.
-- Juho @JPaiv # Backend.
-- Minja @MinjaSenna # Assisting with design & frontend-code
+- [Juho](https://github.com/JPaiv) # Backend.
+- [Minja](https://github.com/MinjaSenna) # Assisting with design & frontend-code
 
 ### Please note when looking at the code:
 - Git-history is destroyed for potentially vulnerable info. Repository was private and hosted in Gitlab when it was on active deployment
